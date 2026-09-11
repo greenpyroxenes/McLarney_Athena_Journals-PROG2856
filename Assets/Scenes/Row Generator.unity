@@ -633,14 +633,14 @@ MonoBehaviour:
   m_VerticalScrollbarEventHandler: {fileID: 0}
   m_LayoutGroup: {fileID: 0}
   m_ScrollSensitivity: 1
-  m_ContentType: 2
+  m_ContentType: 0
   m_InputType: 0
   m_AsteriskChar: 42
-  m_KeyboardType: 2
+  m_KeyboardType: 0
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
-  m_CharacterValidation: 2
+  m_CharacterValidation: 0
   m_RegexValue: 
   m_GlobalPointSize: 14
   m_CharacterLimit: 0
@@ -650,7 +650,7 @@ MonoBehaviour:
       - m_Target: {fileID: 563757360}
         m_TargetAssemblyTypeName: RowGeneration, Assembly-CSharp
         m_MethodName: updateSquareNumber
-        m_Mode: 3
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -750,6 +750,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RowGeneration
   numberOfSquares: 0
   number: 
+  result: 0
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
