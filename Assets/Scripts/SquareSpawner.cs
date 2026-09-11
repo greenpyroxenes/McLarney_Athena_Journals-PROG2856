@@ -3,7 +3,9 @@ using UnityEngine.InputSystem;
 
 public class SquareSpawner : MonoBehaviour
 {
-    Vector3 mousePos;
+    public GameObject debugPrefab;
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -18,6 +20,7 @@ public class SquareSpawner : MonoBehaviour
         float mousePosY = mousePos.y;
         if (Mouse.current.leftButton.isPressed)
         {
+            Instantiate(debugPrefab);
             Vector2 line1 = new Vector2(mousePosX, mousePosY + 1);
             Vector2 line2 = new Vector2(mousePosX + 1, mousePosY);
             Vector2 line3 = new Vector2(mousePosX + 1, mousePosY + 1);
