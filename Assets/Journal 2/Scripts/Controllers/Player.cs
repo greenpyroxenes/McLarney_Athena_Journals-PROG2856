@@ -18,7 +18,6 @@ public class Player : MonoBehaviour
         if (Keyboard.current.bKey.wasPressedThisFrame)
         {
             SpawnBombAtOffset(bombOffset);
-            print("hello###hi");
         }
         if (Keyboard.current.tKey.wasPressedThisFrame)
         {
@@ -80,8 +79,6 @@ public class Player : MonoBehaviour
             float bombPosY = bombPos.y - inputDistance;
             bombPos = new Vector2(bombPosX, bombPosY);
             Instantiate(bombPrefab, bombPos, Quaternion.identity);
-
-          
         }
     }
 }
