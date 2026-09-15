@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
     public Vector3 bombOffset = new Vector3(0f, 1f, 0f);
     public float bombTrailSpacing;
     public int numberOfBombs;
+    public float cornerDist;
 
     // Update is called once per frame
     void Update()
@@ -17,10 +18,15 @@ public class Player : MonoBehaviour
         if (Keyboard.current.bKey.wasPressedThisFrame)
         {
             SpawnBombAtOffset(bombOffset);
+            print("hello###hi");
         }
         if (Keyboard.current.tKey.wasPressedThisFrame)
         {
             SpawnBombTrail(bombTrailSpacing, numberOfBombs);
+        }
+        if(Keyboard.current.cKey.wasPressedThisFrame)
+        {
+            SpawnBombOnCorner(cornerDist);
         }
     }
 
@@ -34,8 +40,48 @@ public class Player : MonoBehaviour
         Vector2 bombPos = transform.position;
         for (int i = 0; i < numberOfBombs; i++)
         {
-            Instantiate(bombPrefab, bombPos, Quaternion.identity);
             bombPos.y -= bombSpacing;
+            Instantiate(bombPrefab, bombPos, Quaternion.identity);
+            
+        }
+    }
+
+    void SpawnBombOnCorner(float inputDistance)
+    {
+        int corner = Random.Range(1, 5);
+        if(corner == 1)
+        {
+            Vector2 bombPos = transform.position;
+            float bombPosX = bombPos.x + inputDistance;
+            float bombPosY = bombPos.y + inputDistance;
+            bombPos = new Vector2(bombPosX, bombPosY);
+            Instantiate(bombPrefab, bombPos, Quaternion.identity);
+        }
+        if(corner == 2)
+        {
+            Vector2 bombPos = transform.position;
+            float bombPosX = bombPos.x - inputDistance;
+            float bombPosY = bombPos.y + inputDistance;
+            bombPos = new Vector2(bombPosX, bombPosY);
+            Instantiate(bombPrefab, bombPos, Quaternion.identity);
+        }
+        if(corner == 3)
+        {
+            Vector2 bombPos = transform.position;
+            float bombPosX = bombPos.x + inputDistance;
+            float bombPosY = bombPos.y - inputDistance;
+            bombPos = new Vector2(bombPosX, bombPosY);
+            Instantiate(bombPrefab, bombPos, Quaternion.identity);
+        }
+        if(corner == 4)
+        {
+            Vector2 bombPos = transform.position;
+            float bombPosX = bombPos.x - inputDistance;
+            float bombPosY = bombPos.y - inputDistance;
+            bombPos = new Vector2(bombPosX, bombPosY);
+            Instantiate(bombPrefab, bombPos, Quaternion.identity);
+
+          
         }
     }
 }
