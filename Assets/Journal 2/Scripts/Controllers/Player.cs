@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
     public float cornerDist;
     public Enemy enemyScript;
     public float ratio;
+    public float maxRadar;
 
     // Update is called once per frame
     void Update()
@@ -33,6 +34,10 @@ public class Player : MonoBehaviour
         {
             WarpPlayer(enemyScript.transform, ratio);
         }
+        if(Keyboard.current.rKey.isPressed)
+        {
+            DetectAsteroids(maxRadar, asteroidTransforms);
+        }    
     }
 
     void SpawnBombAtOffset(Vector3 inOffset)
@@ -59,6 +64,21 @@ public class Player : MonoBehaviour
         }
         Vector3 direction = target.position - transform.position;
         transform.position = direction.normalized * ratio;
+    }
+
+    void DetectAsteroids(float inMaxRange, List<Transform> inAsteroids)
+    {
+        
+        for(int  i = 0;i < inAsteroids.Count;i++)
+        {
+            
+            if (inMaxRange > Vector3.Distance(transform.position, inAsteroids[i].position))
+            {
+                Vector3 direction = inAsteroids[i].position - transform.position;
+                Debug.Log(direction);
+                Debug.DrawLine(transform.position, inAsteroids[i].position);
+            }
+        }
     }
 
     void SpawnBombOnCorner(float inputDistance)
