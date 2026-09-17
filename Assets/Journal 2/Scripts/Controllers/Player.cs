@@ -11,6 +11,8 @@ public class Player : MonoBehaviour
     public float bombTrailSpacing;
     public int numberOfBombs;
     public float cornerDist;
+    public Enemy enemyScript;
+    public float ratio;
 
     // Update is called once per frame
     void Update()
@@ -26,6 +28,10 @@ public class Player : MonoBehaviour
         if(Keyboard.current.cKey.wasPressedThisFrame)
         {
             SpawnBombOnCorner(cornerDist);
+        }
+        if(Keyboard.current.wKey.wasPressedThisFrame)
+        {
+            WarpPlayer(enemyScript.transform, ratio);
         }
     }
 
@@ -43,6 +49,16 @@ public class Player : MonoBehaviour
             Instantiate(bombPrefab, bombPos, Quaternion.identity);
             
         }
+    }
+
+    void WarpPlayer(Transform target, float ratio)
+    {
+        if(ratio > 1)
+        {
+            ratio = 1;
+        }
+        Vector3 direction = target.position - transform.position;
+        transform.position = direction.normalized * ratio;
     }
 
     void SpawnBombOnCorner(float inputDistance)
