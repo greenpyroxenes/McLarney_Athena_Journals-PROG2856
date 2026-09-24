@@ -19,6 +19,10 @@ public class Player : MonoBehaviour
     private float acceleration;
     public float maxSpeed = 1f;
 
+    void Start()
+    {
+        acceleration = maxSpeed / accelerationTime;
+    }
 
     // Update is called once per frame
     void Update()
