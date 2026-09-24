@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -14,14 +15,17 @@ public class Player : MonoBehaviour
     public Enemy enemyScript;
     public float ratio;
     public float maxRadar;
-    private Vector3 velocity;
+    public Vector3 velocity;
     public float accelerationTime = 1f;
+    public float decelerationTime = 1f;
     private float acceleration;
+    private float deceleration;
     public float maxSpeed = 1f;
 
     void Start()
     {
         acceleration = maxSpeed / accelerationTime;
+        deceleration = maxSpeed / decelerationTime;
     }
 
     // Update is called once per frame
@@ -123,6 +127,10 @@ public class Player : MonoBehaviour
         if (Keyboard.current.downArrowKey.isPressed)
         {
             velocity += acceleration * Time.deltaTime * Vector3.down;
+        }
+        if(!Keyboard.current.leftArrowKey.isPressed && !Keyboard.current.rightArrowKey.isPressed && !Keyboard.current.upArrowKey.isPressed && !Keyboard.current.downArrowKey.isPressed)
+        {
+            velocity -= deceleration * Time.deltaTime * velocity.normalized;
         }
 
         velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
