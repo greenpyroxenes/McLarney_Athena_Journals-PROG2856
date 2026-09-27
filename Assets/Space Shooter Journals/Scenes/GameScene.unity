@@ -1213,6 +1213,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5749485833328937868, guid: 1e8384f9fd25ee34d917c3caecdc0a45, type: 3}
+      propertyPath: drawingTime
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9032696404556402549, guid: 1e8384f9fd25ee34d917c3caecdc0a45, type: 3}
       propertyPath: m_Name
       value: Stars
