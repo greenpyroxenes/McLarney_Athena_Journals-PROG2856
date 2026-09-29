@@ -21,6 +21,9 @@ public class Player : MonoBehaviour
     private float acceleration;
     private float deceleration;
     public float maxSpeed = 1f;
+    public float radarRadius = 3f;
+    public int numSides = 8;
+    public Color radarColor = Color.green;
 
     void Start()
     {
@@ -52,6 +55,7 @@ public class Player : MonoBehaviour
             DetectAsteroids(maxRadar, asteroidTransforms);
         }
         PlayerMovement();
+        PlayerRadar(radarRadius, numSides);
     }
 
     #region Bomb
@@ -147,7 +151,7 @@ public class Player : MonoBehaviour
     }
     #endregion
 
-    #region Asteroids
+    #region Misc
     void DetectAsteroids(float inMaxRange, List<Transform> inAsteroids)
     {
         
@@ -160,6 +164,50 @@ public class Player : MonoBehaviour
                 Debug.Log(direction);
                 Debug.DrawLine(transform.position, inAsteroids[i].position);
             }
+        }
+    }
+
+    void PlayerRadar(float inRadius, int inNumSides)
+    {
+        float stepAngle = 360.0f / inNumSides;
+        List<Vector3> points = new();
+
+        stepAngle *= Mathf.Deg2Rad;
+        float currentAngle = stepAngle;
+
+        for (int i = 0; i < inNumSides; i++)
+        {
+            float xPos = Mathf.Cos(currentAngle) * inRadius;
+            float yPos = Mathf.Sin(currentAngle) * inRadius;
+
+            Vector3 newPoint = new Vector2(xPos, yPos);
+            points.Add(newPoint);
+            currentAngle += stepAngle;
+        }
+
+        for (int i = 0; i < inNumSides - 1; i++)
+        {
+            Vector3 startPoint = transform.position + points[i];
+            Vector3 endPoint = transform.position + points[i + 1];
+
+            Debug.DrawLine(startPoint, endPoint, radarColor);
+
+            if (i == inNumSides - 2)
+            {
+                startPoint = transform.position + points[i + 1];
+                endPoint = transform.position + points[0];
+
+                Debug.DrawLine(startPoint, endPoint, radarColor);
+            }
+        }
+        float radarDist = inRadius;
+        if(Vector3.Distance(enemyScript.transform.position, transform.position) < radarDist)
+        {
+            radarColor = Color.red;
+        }
+        else
+        {
+            radarColor = Color.green;
         }
     }
     #endregion
