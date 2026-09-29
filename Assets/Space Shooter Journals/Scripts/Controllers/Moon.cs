@@ -19,13 +19,13 @@ public class Moon : MonoBehaviour
     void Update()
     {
         OrbitalMotion(orbitRadius, speed, planetTransform);
-        Debug.Log(planetTransform.position);
+        Debug.Log(transform.position);
     }
 
     void OrbitalMotion(float inRadius, float inSpeed, Transform inTarget)
     {
         angle += inSpeed * Time.deltaTime;
-        if(angle == 360f)
+        if(angle > 360f)
         {
             angle = 0f;
         }
