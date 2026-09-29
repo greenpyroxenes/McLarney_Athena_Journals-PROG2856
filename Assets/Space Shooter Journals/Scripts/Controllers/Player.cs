@@ -24,6 +24,9 @@ public class Player : MonoBehaviour
     public float radarRadius = 3f;
     public int numSides = 8;
     public Color radarColor = Color.green;
+    public float powerUpRadius = 2f;
+    public int numOfPowerUp = 4;
+    public GameObject powerupPrefab;
 
     void Start()
     {
@@ -53,6 +56,10 @@ public class Player : MonoBehaviour
         if(Keyboard.current.rKey.isPressed)
         {
             DetectAsteroids(maxRadar, asteroidTransforms);
+        }
+        if(Keyboard.current.pKey.wasPressedThisFrame)
+        {
+            SpawnPowerUps(powerUpRadius, numOfPowerUp);
         }
         PlayerMovement();
         PlayerRadar(radarRadius, numSides);
@@ -152,6 +159,26 @@ public class Player : MonoBehaviour
     #endregion
 
     #region Misc
+
+    void SpawnPowerUps(float inRadius, int numPowerUps)
+    {
+        float stepAngle = 360.0f / numPowerUps;
+        List<GameObject> powerUps = new();
+
+        stepAngle *= Mathf.Deg2Rad;
+        float currentAngle = stepAngle;
+
+        for (int i = 0; i < numPowerUps; i++)
+        {
+            float xPos = Mathf.Cos(currentAngle) * inRadius;
+            float yPos = Mathf.Sin(currentAngle) * inRadius;
+
+            Vector3 newPoint = new Vector3(xPos, yPos);
+            powerUps.Add(powerupPrefab);
+            Instantiate(powerUps[i], transform.position + newPoint, Quaternion.identity);
+            currentAngle += stepAngle;
+        }
+    }
     void DetectAsteroids(float inMaxRange, List<Transform> inAsteroids)
     {
         
