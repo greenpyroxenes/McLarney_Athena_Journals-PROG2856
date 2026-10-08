@@ -28,6 +28,7 @@ public class Player : MonoBehaviour
     public int numOfPowerUp = 4;
     public GameObject powerupPrefab;
     public GameObject playerRocketPrefab;
+    public GameObject playerShipPrefab;
 
     void Start()
     {
@@ -125,7 +126,7 @@ public class Player : MonoBehaviour
 
     }
 
-    void SpawnBlades()
+    void SpawnBlades(float inDistance, int inNumOfBlades, float inRotateSpeed)
     {
 
     }
@@ -157,6 +158,11 @@ public class Player : MonoBehaviour
 
         velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
         transform.position += velocity * Time.deltaTime;
+    }
+
+    void enemyCollide()
+    {
+
     }
     void WarpPlayer(Transform target, float ratio)
     {
