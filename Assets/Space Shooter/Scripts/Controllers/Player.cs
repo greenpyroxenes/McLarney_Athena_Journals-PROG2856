@@ -27,6 +27,7 @@ public class Player : MonoBehaviour
     public float powerUpRadius = 2f;
     public int numOfPowerUp = 4;
     public GameObject powerupPrefab;
+    public GameObject playerRocketPrefab;
 
     void Start()
     {
@@ -65,7 +66,7 @@ public class Player : MonoBehaviour
         PlayerRadar(radarRadius, numSides);
     }
 
-    #region Bomb
+    #region Bombs and Weapons
     void SpawnBombAtOffset(Vector3 inOffset)
     {
         Instantiate(bombPrefab, transform.position + inOffset, Quaternion.identity);
@@ -117,6 +118,16 @@ public class Player : MonoBehaviour
             bombPos = new Vector2(bombPosX, bombPosY);
             Instantiate(bombPrefab, bombPos, Quaternion.identity);
         }
+    }
+
+    void FireRocket()
+    {
+
+    }
+
+    void SpawnBlades()
+    {
+
     }
     #endregion
 
@@ -236,6 +247,11 @@ public class Player : MonoBehaviour
         {
             radarColor = Color.green;
         }
+    }
+
+    void EnemyCollision()
+    {
+
     }
     #endregion
 }

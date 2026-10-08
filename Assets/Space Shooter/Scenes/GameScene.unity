@@ -599,6 +599,10 @@ PrefabInstance:
       propertyPath: accelerationTime
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 114516115454935764, guid: e3900e4d87ee29c43ad1d9098b51432c, type: 3}
+      propertyPath: enemyRocketPrefab
+      value: 
+      objectReference: {fileID: 1761202055222398, guid: 561200a1f15bfaa449ccc4cb56a3a980, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1223,6 +1227,10 @@ PrefabInstance:
       propertyPath: numberOfTrailBombs
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 6890330259706833056, guid: abc125f00ae369940b2c5c0275186637, type: 3}
+      propertyPath: playerRocketPrefab
+      value: 
+      objectReference: {fileID: 7880251324517616225, guid: 91f5b02f5bfe7b447aa1fc0086d826e1, type: 3}
     - target: {fileID: 6890330259706833056, guid: abc125f00ae369940b2c5c0275186637, type: 3}
       propertyPath: asteroidTransforms.Array.size
       value: 10
