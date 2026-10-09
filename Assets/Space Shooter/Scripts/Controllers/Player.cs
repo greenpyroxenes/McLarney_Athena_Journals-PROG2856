@@ -2,6 +2,7 @@
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
 {
@@ -25,10 +26,16 @@ public class Player : MonoBehaviour
     public int numSides = 8;
     public Color radarColor = Color.green;
     public float powerUpRadius = 2f;
+    public float bladeDist = 1f;
+    public float bladeSpeed = 1f;
     public int numOfPowerUp = 4;
+    public int numOfBlades = 4;
     public GameObject powerupPrefab;
     public GameObject playerRocketPrefab;
     public GameObject playerShipPrefab;
+    public List<GameObject> playerShips = new();
+    public bool bladeSpawn = false;
+    float rotateAngle = 0f;
 
     void Start()
     {
@@ -39,7 +46,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Keyboard.current.bKey.wasPressedThisFrame)
+        if (Keyboard.current.oKey.wasPressedThisFrame)
         {
             SpawnBombAtOffset(bombOffset);
         }
@@ -62,6 +69,15 @@ public class Player : MonoBehaviour
         if(Keyboard.current.pKey.wasPressedThisFrame)
         {
             SpawnPowerUps(powerUpRadius, numOfPowerUp);
+        }
+        if(Keyboard.current.bKey.wasPressedThisFrame && bladeSpawn == false)
+        {
+            SpawnBlades(bladeDist, numOfBlades);
+            bladeSpawn = true;
+        }
+        if(bladeSpawn == true)
+        {
+            BladeRotate(bladeSpeed);   
         }
         PlayerMovement();
         PlayerRadar(radarRadius, numSides);
@@ -126,9 +142,34 @@ public class Player : MonoBehaviour
 
     }
 
-    void SpawnBlades(float inDistance, int inNumOfBlades, float inRotateSpeed)
+    public void SpawnBlades(float inRadius, int inNumOfBlades)
     {
+        float stepAngle = 360.0f / inNumOfBlades;
 
+        stepAngle *= Mathf.Deg2Rad;
+        float currentAngle = stepAngle;
+        for(int i = 0; i < inNumOfBlades; i++)
+        {
+            float xPos = Mathf.Cos(currentAngle) * inRadius;
+            float yPos = Mathf.Sin(currentAngle) * inRadius;
+
+            Vector3 newPoint = new Vector3(xPos, yPos);
+            playerShips.Add(playerShipPrefab);
+            Instantiate(playerShips[i], transform.position + newPoint, Quaternion.identity);
+            currentAngle += stepAngle;
+        }
+    }
+    void BladeRotate(float inBladeSpeed)
+    {
+        rotateAngle += inBladeSpeed * Time.deltaTime;
+        if (rotateAngle > 360)
+        {
+            rotateAngle = 0;
+        }
+        for (int i = 0; i < playerShips.Count; i++)
+        {
+            playerShips[i].transform.Rotate(0, 0, rotateAngle);
+        }
     }
     #endregion
 
