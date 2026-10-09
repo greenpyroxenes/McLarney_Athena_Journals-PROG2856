@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using JetBrains.Annotations;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
+using static UnityEngine.GraphicsBuffer;
 
 public class Player : MonoBehaviour
 {
@@ -35,6 +38,7 @@ public class Player : MonoBehaviour
     public GameObject playerShipPrefab;
     public List<GameObject> playerShips = new();
     public bool bladeSpawn = false;
+    public float bombAngle = 0f;
     float rotateAngle = 0f;
 
     void Start()
@@ -78,6 +82,10 @@ public class Player : MonoBehaviour
         if(bladeSpawn == true)
         {
             BladeRotate(bladeSpeed);   
+        }
+        if(Keyboard.current.qKey.wasPressedThisFrame)
+        {
+            LaunchBomb();
         }
         PlayerMovement();
         PlayerRadar(radarRadius, numSides);
@@ -137,9 +145,25 @@ public class Player : MonoBehaviour
         }
     }
 
-    void FireRocket()
+    void LaunchBomb()
     {
+        Vector3 bombPos = transform.position;
+        float bombPosY = bombPos.y + 2;
+        float bombPosX = bombPos.x;
+        float bombPosZ = bombPos.z;
+        bombPos = new Vector3(bombPosX, bombPosY, bombPosZ);
+        Instantiate(bombPrefab, bombPos, Quaternion.identity);
 
+        bombAngle += 3 * Time.deltaTime;
+        if (bombAngle > 360f)
+        {
+            bombAngle = 0f;
+        }
+
+        float xPos = Mathf.Cos(bombAngle * Mathf.Deg2Rad) * 1 + transform.position.x;
+        float yPos = Mathf.Sin(bombAngle * Mathf.Deg2Rad) * 1 + transform.position.y;
+        Vector3 orbitPoint = new Vector3(xPos, yPos, 0);
+        transform.position = orbitPoint;
     }
 
     public void SpawnBlades(float inRadius, int inNumOfBlades)
