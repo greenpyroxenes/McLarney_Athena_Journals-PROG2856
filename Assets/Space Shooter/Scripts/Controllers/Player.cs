@@ -29,17 +29,21 @@ public class Player : MonoBehaviour
     public int numSides = 8;
     public Color radarColor = Color.green;
     public float powerUpRadius = 2f;
-    public float bladeDist = 1f;
-    public float bladeSpeed = 1f;
     public int numOfPowerUp = 4;
-    public int numOfBlades = 4;
     public GameObject powerupPrefab;
     public GameObject playerRocketPrefab;
     public GameObject playerShipPrefab;
     public List<GameObject> playerShips = new();
-    public bool bladeSpawn = false;
     public float bombAngle = 0f;
+    bool spinBombSpawn = false;
+    public float bombSpin = 1f;
+    public float bombSpinRadius = 1f;
+    public bool bladeSpawn = false;
+    public int numOfBlades = 4;
+    public float bladeDist = 1f;
+    public float bladeSpeed = 1f;
     float rotateAngle = 0f;
+    public GameObject copyBomb;
 
     void Start()
     {
@@ -74,18 +78,23 @@ public class Player : MonoBehaviour
         {
             SpawnPowerUps(powerUpRadius, numOfPowerUp);
         }
-        if(Keyboard.current.bKey.wasPressedThisFrame && bladeSpawn == false)
+        if (Keyboard.current.qKey.wasPressedThisFrame)
+        {
+            LaunchBomb();
+            spinBombSpawn = true;
+        }
+        if (spinBombSpawn == true)
+        {
+            BombOrbit();
+        }
+        if (Keyboard.current.bKey.wasPressedThisFrame && bladeSpawn == false)
         {
             SpawnBlades(bladeDist, numOfBlades);
             bladeSpawn = true;
         }
-        if(bladeSpawn == true)
+        if (bladeSpawn == true)
         {
-            BladeRotate(bladeSpeed);   
-        }
-        if(Keyboard.current.qKey.wasPressedThisFrame)
-        {
-            LaunchBomb();
+            BladeRotate(bladeSpeed);
         }
         PlayerMovement();
         PlayerRadar(radarRadius, numSides);
@@ -144,7 +153,6 @@ public class Player : MonoBehaviour
             Instantiate(bombPrefab, bombPos, Quaternion.identity);
         }
     }
-
     void LaunchBomb()
     {
         Vector3 bombPos = transform.position;
@@ -152,27 +160,29 @@ public class Player : MonoBehaviour
         float bombPosX = bombPos.x;
         float bombPosZ = bombPos.z;
         bombPos = new Vector3(bombPosX, bombPosY, bombPosZ);
-        Instantiate(bombPrefab, bombPos, Quaternion.identity);
-
-        bombAngle += 3 * Time.deltaTime;
+        copyBomb = Instantiate(bombPrefab, bombPos, Quaternion.identity);
+    }
+    void BombOrbit()
+    {
+        bombAngle += bombSpin * Time.deltaTime;
         if (bombAngle > 360f)
         {
             bombAngle = 0f;
         }
 
-        float xPos = Mathf.Cos(bombAngle * Mathf.Deg2Rad) * 1 + transform.position.x;
-        float yPos = Mathf.Sin(bombAngle * Mathf.Deg2Rad) * 1 + transform.position.y;
+        float xPos = Mathf.Cos(bombAngle * Mathf.Deg2Rad) * bombSpinRadius + transform.position.x;
+        float yPos = Mathf.Sin(bombAngle * Mathf.Deg2Rad) * bombSpinRadius + transform.position.y;
         Vector3 orbitPoint = new Vector3(xPos, yPos, 0);
-        transform.position = orbitPoint;
+        copyBomb.transform.position = orbitPoint;
+        Debug.Log(copyBomb.transform.position);
     }
-
     public void SpawnBlades(float inRadius, int inNumOfBlades)
     {
         float stepAngle = 360.0f / inNumOfBlades;
 
         stepAngle *= Mathf.Deg2Rad;
         float currentAngle = stepAngle;
-        for(int i = 0; i < inNumOfBlades; i++)
+        for (int i = 0; i < inNumOfBlades; i++)
         {
             float xPos = Mathf.Cos(currentAngle) * inRadius;
             float yPos = Mathf.Sin(currentAngle) * inRadius;
@@ -195,6 +205,8 @@ public class Player : MonoBehaviour
             playerShips[i].transform.Rotate(0, 0, rotateAngle);
         }
     }
+
+
     #endregion
 
     #region Movement
@@ -270,7 +282,7 @@ public class Player : MonoBehaviour
             if (inMaxRange > Vector3.Distance(transform.position, inAsteroids[i].position))
             {
                 Vector3 direction = inAsteroids[i].position - transform.position;
-                Debug.Log(direction);
+               
                 Debug.DrawLine(transform.position, inAsteroids[i].position);
             }
         }

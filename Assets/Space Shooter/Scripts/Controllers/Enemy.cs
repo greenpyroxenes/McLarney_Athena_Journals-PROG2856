@@ -41,7 +41,6 @@ public class Enemy : MonoBehaviour
             RocketMovement(playerPos);
             StartCoroutine(explodeRocket());
         }
-        Debug.Log(enemyRocketPrefab.transform.position);
     }
 
     void ShipMovement(Transform inPlayerPos)

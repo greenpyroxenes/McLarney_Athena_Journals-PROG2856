@@ -19,7 +19,6 @@ public class Moon : MonoBehaviour
     void Update()
     {
         OrbitalMotion(orbitRadius, speed, planetTransform);
-        Debug.Log(transform.position);
     }
 
     void OrbitalMotion(float inRadius, float inSpeed, Transform inTarget)
