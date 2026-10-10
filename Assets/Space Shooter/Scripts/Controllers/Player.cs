@@ -42,9 +42,11 @@ public class Player : MonoBehaviour
     public int numOfBlades = 4;
     public float bladeDist = 1f;
     public float bladeSpeed = 1f;
-    float rotateAngle = 0f;
+    public float bladeRotate = 0f;
     public GameObject copyBomb;
+    public float shipRotate = 1f;
     List<GameObject> cloneBladeList = new();
+    public float collisionDist = 1f;
 
     void Start()
     {
@@ -99,6 +101,7 @@ public class Player : MonoBehaviour
         }
         PlayerMovement();
         PlayerRadar(radarRadius, numSides);
+        EnemyCollide();
     }
 
     #region Bombs and Weapons
@@ -197,14 +200,14 @@ public class Player : MonoBehaviour
     }
     void BladeRotate(float inBladeSpeed)
     {
-        rotateAngle += inBladeSpeed * Time.deltaTime;
-        if (rotateAngle > 360)
+        bladeRotate += inBladeSpeed * Time.deltaTime;
+        if (bladeRotate > 360)
         {
-            rotateAngle = 0;
+            bladeRotate = 0;
         }
         for (int i = 0; i < cloneBladeList.Count; i++)
         {
-            cloneBladeList[i].transform.Rotate(0, 0, rotateAngle);
+            cloneBladeList[i].transform.Rotate(0, 0, bladeRotate);
         }
     }
 
@@ -239,9 +242,17 @@ public class Player : MonoBehaviour
         transform.position += velocity * Time.deltaTime;
     }
 
-    void enemyCollide()
+    void EnemyCollide()
     {
-
+        if(Vector3.Distance(enemyScript.transform.position, transform.position) < collisionDist)
+        {
+            shipRotate += 3 * Time.deltaTime;
+            if (shipRotate > 360)
+            {
+                shipRotate = 0;
+            }
+            transform.Rotate(0, 0, shipRotate);
+        }
     }
     void WarpPlayer(Transform target, float ratio)
     {
