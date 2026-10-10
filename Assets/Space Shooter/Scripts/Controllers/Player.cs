@@ -44,6 +44,7 @@ public class Player : MonoBehaviour
     public float bladeSpeed = 1f;
     float rotateAngle = 0f;
     public GameObject copyBomb;
+    List<GameObject> cloneBladeList = new();
 
     void Start()
     {
@@ -189,7 +190,8 @@ public class Player : MonoBehaviour
 
             Vector3 newPoint = new Vector3(xPos, yPos);
             playerShips.Add(playerShipPrefab);
-            Instantiate(playerShips[i], transform.position + newPoint, Quaternion.identity);
+            cloneBladeList.Add(playerShipPrefab);
+            cloneBladeList[i] = Instantiate(playerShips[i], transform.position + newPoint, Quaternion.identity);
             currentAngle += stepAngle;
         }
     }
@@ -200,9 +202,9 @@ public class Player : MonoBehaviour
         {
             rotateAngle = 0;
         }
-        for (int i = 0; i < playerShips.Count; i++)
+        for (int i = 0; i < cloneBladeList.Count; i++)
         {
-            playerShips[i].transform.Rotate(0, 0, rotateAngle);
+            cloneBladeList[i].transform.Rotate(0, 0, rotateAngle);
         }
     }
 
