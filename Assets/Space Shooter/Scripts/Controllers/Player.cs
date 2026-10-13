@@ -1,4 +1,5 @@
 ﻿using JetBrains.Annotations;
+using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor.Experimental.GraphView;
@@ -36,7 +37,7 @@ public class Player : MonoBehaviour
     public List<GameObject> playerShips = new();
     public float bombAngle = 0f;
     bool spinBombSpawn = false;
-    public float bombSpin = 1f;
+    public float bombSpin = 10f;
     public float bombSpinRadius = 1f;
     public bool bladeSpawn = false;
     public int numOfBlades = 4;
@@ -47,6 +48,10 @@ public class Player : MonoBehaviour
     public float shipRotate = 1f;
     List<GameObject> cloneBladeList = new();
     public float collisionDist = 1f;
+    public bool bombLaunch = false;
+    public float bombLaunchSpeed = 10f;
+    float bombExplodeDist = 1f;
+    public float time = 0;
 
     void Start()
     {
@@ -81,14 +86,23 @@ public class Player : MonoBehaviour
         {
             SpawnPowerUps(powerUpRadius, numOfPowerUp);
         }
-        if (Keyboard.current.qKey.wasPressedThisFrame)
+        if (Keyboard.current.qKey.wasPressedThisFrame && bombLaunch == false && spinBombSpawn == false)
         {
-            LaunchBomb();
+            SpawnRotatingBomb();
             spinBombSpawn = true;
         }
         if (spinBombSpawn == true)
         {
             BombOrbit();
+            if(Keyboard.current.eKey.wasPressedThisFrame)
+            {
+                bombLaunch = true;
+                spinBombSpawn = false;
+            }
+        }
+        if(bombLaunch == true)
+        {
+            LaunchBomb();
         }
         if (Keyboard.current.bKey.wasPressedThisFrame && bladeSpawn == false)
         {
@@ -157,7 +171,7 @@ public class Player : MonoBehaviour
             Instantiate(bombPrefab, bombPos, Quaternion.identity);
         }
     }
-    void LaunchBomb()
+    void SpawnRotatingBomb()
     {
         Vector3 bombPos = transform.position;
         float bombPosY = bombPos.y + 2;
@@ -178,7 +192,26 @@ public class Player : MonoBehaviour
         float yPos = Mathf.Sin(bombAngle * Mathf.Deg2Rad) * bombSpinRadius + transform.position.y;
         Vector3 orbitPoint = new Vector3(xPos, yPos, 0);
         copyBomb.transform.position = orbitPoint;
-        Debug.Log(copyBomb.transform.position);
+    }
+
+    void LaunchBomb()
+    {
+        Vector3 launchAngle = new Vector3 (Mathf.Cos(bombAngle * Mathf.Deg2Rad), Mathf.Cos(bombAngle * Mathf.Deg2Rad));
+        Debug.Log(launchAngle);
+        Vector3 direction = launchAngle.normalized - Vector3.forward;
+        copyBomb.transform.position += Time.deltaTime * bombLaunchSpeed * direction;
+        if(Vector3.Distance(enemyScript.transform.position, copyBomb.transform.position) < bombExplodeDist)
+        {
+            Destroy(copyBomb);
+            bombLaunch = false;
+        }
+        time += Time.deltaTime;
+        if(time > 4)
+        {
+            Destroy(copyBomb);
+            bombLaunch = false;
+            time = 0;
+        }
     }
     public void SpawnBlades(float inRadius, int inNumOfBlades)
     {
