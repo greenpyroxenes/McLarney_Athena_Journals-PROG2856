@@ -52,6 +52,8 @@ public class Player : MonoBehaviour
     public float bombLaunchSpeed = 10f;
     float bombExplodeDist = 1f;
     public float time = 0;
+    float bladeSpin = 0;
+    public float bladeOrbitSpeed = 1f;
 
     void Start()
     {
