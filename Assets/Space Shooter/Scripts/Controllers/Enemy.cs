@@ -37,7 +37,7 @@ public class Enemy : MonoBehaviour
         ShipMovement(playerPos);
         if(spawnedRocket == false && rocketSpawnTime > 4f)
         {
-            LaunchRocket(playerPos);
+            LaunchRocket();
             spawnedRocket = true;
         }
         if(spawnedRocket == true)
@@ -57,7 +57,7 @@ public class Enemy : MonoBehaviour
         transform.position += shipVelocity * Time.deltaTime;
     }
 
-    void LaunchRocket(Transform inPlayerPos)
+    void LaunchRocket()
     {
         if (spawnedRocket == false)
         {
