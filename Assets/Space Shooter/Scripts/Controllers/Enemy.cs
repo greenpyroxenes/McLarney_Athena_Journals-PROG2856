@@ -21,6 +21,8 @@ public class Enemy : MonoBehaviour
     float rocketAcceleration;
     public float rocketAccelerationTime;
     public float time = 0f;
+    public float rocketDist = 0.5f;
+    public float rocketSpawnTime = 0f;
 
     void Start()
     {
@@ -30,9 +32,10 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
+        rocketSpawnTime += Time.deltaTime;
         playerPos = playerScript.transform;
         ShipMovement(playerPos);
-        if(Keyboard.current.lKey.wasPressedThisFrame)
+        if(spawnedRocket == false && rocketSpawnTime > 4f)
         {
             LaunchRocket(playerPos);
             spawnedRocket = true;
@@ -40,6 +43,7 @@ public class Enemy : MonoBehaviour
         if(spawnedRocket == true)
         {
             RocketMovement(playerPos);
+            DestroyRocket();
         }
     }
 
@@ -70,16 +74,23 @@ public class Enemy : MonoBehaviour
         copyRocket.transform.position += rocketVelocity * Time.deltaTime;
     }
 
-    void DestroyRocket(GameObject inRocket)
+    void DestroyRocket()
     {
-        Destroy(inRocket);
-        spawnedRocket = false;
+        if (rocketDist > Vector3.Distance(playerScript.transform.position, copyRocket.transform.position))
+        {
+            Destroy(copyRocket);
+            spawnedRocket = false;
+            rocketSpawnTime = 0;
+            time = 0;
+        }
         time += Time.deltaTime;
-        if (time > 4)
+        Debug.Log(time);
+        if (time > 4f)
         {
             Destroy(copyRocket);
             spawnedRocket = false;
             time = 0;
+            rocketSpawnTime = 0;
         }
     }
 }
