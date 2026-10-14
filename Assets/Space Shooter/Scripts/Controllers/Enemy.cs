@@ -20,6 +20,7 @@ public class Enemy : MonoBehaviour
     public float rocketSpeed = 1f;
     float rocketAcceleration;
     public float rocketAccelerationTime;
+    public float time = 0f;
 
     void Start()
     {
@@ -39,7 +40,6 @@ public class Enemy : MonoBehaviour
         if(spawnedRocket == true)
         {
             RocketMovement(playerPos);
-            StartCoroutine(explodeRocket());
         }
     }
 
@@ -74,13 +74,12 @@ public class Enemy : MonoBehaviour
     {
         Destroy(inRocket);
         spawnedRocket = false;
-    }
-
-    IEnumerator explodeRocket()
-    {
-
-        yield return new WaitForSeconds(5f);
-        DestroyRocket(copyRocket);
-        
+        time += Time.deltaTime;
+        if (time > 4)
+        {
+            Destroy(copyRocket);
+            spawnedRocket = false;
+            time = 0;
+        }
     }
 }

@@ -52,8 +52,11 @@ public class Player : MonoBehaviour
     public float bombLaunchSpeed = 10f;
     float bombExplodeDist = 1f;
     public float time = 0;
-    float bladeSpin = 0;
     public float bladeOrbitSpeed = 1f;
+    bool collide = false;
+    public float spinTime = 0;
+    [Tooltip("Measured in Degrees per second.")]
+    public float angularSpeed = 270f;
 
     void Start()
     {
@@ -64,60 +67,71 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Keyboard.current.oKey.wasPressedThisFrame)
+        if (collide == false)
         {
-            SpawnBombAtOffset(bombOffset);
-        }
-        if (Keyboard.current.tKey.wasPressedThisFrame)
-        {
-            SpawnBombTrail(bombTrailSpacing, numberOfBombs);
-        }
-        if(Keyboard.current.cKey.wasPressedThisFrame)
-        {
-            SpawnBombOnCorner(cornerDist);
-        }
-        if(Keyboard.current.wKey.wasPressedThisFrame)
-        {
-            WarpPlayer(enemyScript.transform, ratio);
-        }
-        if(Keyboard.current.rKey.isPressed)
-        {
-            DetectAsteroids(maxRadar, asteroidTransforms);
-        }
-        if(Keyboard.current.pKey.wasPressedThisFrame)
-        {
-            SpawnPowerUps(powerUpRadius, numOfPowerUp);
-        }
-        if (Keyboard.current.qKey.wasPressedThisFrame && bombLaunch == false && spinBombSpawn == false)
-        {
-            SpawnRotatingBomb();
-            spinBombSpawn = true;
-        }
-        if (spinBombSpawn == true)
-        {
-            BombOrbit();
-            if(Keyboard.current.eKey.wasPressedThisFrame)
+            if (Keyboard.current.oKey.wasPressedThisFrame)
             {
-                bombLaunch = true;
-                spinBombSpawn = false;
+                SpawnBombAtOffset(bombOffset);
             }
+            if (Keyboard.current.tKey.wasPressedThisFrame)
+            {
+                SpawnBombTrail(bombTrailSpacing, numberOfBombs);
+            }
+            if (Keyboard.current.cKey.wasPressedThisFrame)
+            {
+                SpawnBombOnCorner(cornerDist);
+            }
+            if (Keyboard.current.wKey.wasPressedThisFrame)
+            {
+                WarpPlayer(enemyScript.transform, ratio);
+            }
+            if (Keyboard.current.rKey.isPressed)
+            {
+                DetectAsteroids(maxRadar, asteroidTransforms);
+            }
+            if (Keyboard.current.pKey.wasPressedThisFrame)
+            {
+                SpawnPowerUps(powerUpRadius, numOfPowerUp);
+            }
+            if (Keyboard.current.qKey.wasPressedThisFrame && bombLaunch == false && spinBombSpawn == false)
+            {
+                SpawnRotatingBomb();
+                spinBombSpawn = true;
+            }
+            if (spinBombSpawn == true)
+            {
+                BombOrbit();
+                if (Keyboard.current.eKey.wasPressedThisFrame)
+                {
+                    bombLaunch = true;
+                    spinBombSpawn = false;
+                }
+            }
+            if (bombLaunch == true)
+            {
+                LaunchBomb();
+            }
+            if (Keyboard.current.bKey.wasPressedThisFrame && bladeSpawn == false)
+            {
+                SpawnBlades(bladeDist, numOfBlades);
+                bladeSpawn = true;
+            }
+            if (bladeSpawn == true)
+            {
+                BladeRotate(bladeSpeed);
+            }
+            PlayerMovement();
+            PlayerRadar(radarRadius, numSides);
+            playerRotation();
         }
-        if(bombLaunch == true)
+        if (collide == false)
         {
-            LaunchBomb();
+            EnemyCollide();
         }
-        if (Keyboard.current.bKey.wasPressedThisFrame && bladeSpawn == false)
+        if(collide == true)
         {
-            SpawnBlades(bladeDist, numOfBlades);
-            bladeSpawn = true;
+            ShipSpin();
         }
-        if (bladeSpawn == true)
-        {
-            BladeRotate(bladeSpeed);
-        }
-        PlayerMovement();
-        PlayerRadar(radarRadius, numSides);
-        EnemyCollide();
     }
 
     #region Bombs and Weapons
@@ -252,41 +266,105 @@ public class Player : MonoBehaviour
     #region Movement
     void PlayerMovement()
     {
+        Vector3 playerInput = Vector3.zero;
+
         if (Keyboard.current.leftArrowKey.isPressed)
         {
-            velocity += acceleration * Time.deltaTime * Vector3.left;
+            playerInput += Vector3.left;
         }
         if (Keyboard.current.rightArrowKey.isPressed)
         {
-            velocity += acceleration * Time.deltaTime * Vector3.right;
+            playerInput += Vector3.right;
         }
         if (Keyboard.current.upArrowKey.isPressed)
         {
-            velocity += acceleration * Time.deltaTime * Vector3.up;
+            playerInput += Vector3.up;
         }
         if (Keyboard.current.downArrowKey.isPressed)
         {
-            velocity += acceleration * Time.deltaTime * Vector3.down;
-        }
-        if(!Keyboard.current.leftArrowKey.isPressed && !Keyboard.current.rightArrowKey.isPressed && !Keyboard.current.upArrowKey.isPressed && !Keyboard.current.downArrowKey.isPressed)
-        {
-            velocity -= deceleration * Time.deltaTime * velocity.normalized;
+            playerInput += Vector3.down;
         }
 
-        velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
+        if (playerInput.sqrMagnitude > 0) //input detected
+        {
+            velocity += acceleration * Time.deltaTime * playerInput.normalized; //acelerate
+
+            if (velocity.sqrMagnitude > maxSpeed * maxSpeed)
+            {
+                velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
+            }
+        }
+        else //not detected
+        {
+            float deltaVelocity = deceleration * Time.deltaTime;
+
+            if (velocity.magnitude > deltaVelocity) //if we still need to slow down
+            {
+                velocity -= deceleration * Time.deltaTime * velocity.normalized; //decelerate
+            }
+            else
+            {
+                velocity = Vector3.zero; //complete stop
+            }
+        }
         transform.position += velocity * Time.deltaTime;
+    }
+
+    void playerRotation()
+    {
+        if (velocity.sqrMagnitude == 0) return; //not moving, nothing
+
+        float deltaAngle = ComputeShortestAngle(transform.up, velocity);
+
+        if (deltaAngle == 0) return; //locked on nothing
+
+        float rotationDirection = Mathf.Sign(deltaAngle);
+        float rotationStep = angularSpeed * Time.deltaTime;
+
+        if (rotationStep < Mathf.Abs(deltaAngle)) //still need to rotate
+        {
+            transform.Rotate(0, 0, rotationDirection * rotationStep); //rotate relative to angular speed
+        }
+        else
+        {
+            transform.Rotate(0, 0, deltaAngle); //lock-on
+        }
+    }
+
+    private float ComputeShortestAngle(Vector3 a, Vector3 b)
+    {
+        float angleA = Mathf.Atan2(a.y, a.x) * Mathf.Rad2Deg;
+        float angleB = Mathf.Atan2(b.y, b.x) * Mathf.Rad2Deg;
+
+        return Mathf.DeltaAngle(angleA, angleB);
     }
 
     void EnemyCollide()
     {
         if(Vector3.Distance(enemyScript.transform.position, transform.position) < collisionDist)
         {
-            shipRotate += 3 * Time.deltaTime;
+            collide = true;
+        }
+    }
+
+    void ShipSpin()
+    {
+        spinTime += Time.deltaTime;
+        if (spinTime < 2)
+        {
+            shipRotate += 0.5f * Time.deltaTime;
             if (shipRotate > 360)
             {
                 shipRotate = 0;
             }
             transform.Rotate(0, 0, shipRotate);
+            velocity -= deceleration * Time.deltaTime * velocity.normalized;
+            transform.position += velocity * Time.deltaTime;
+        }
+        if(spinTime > 2)
+        {
+            spinTime = 0;
+            collide = false;
         }
     }
     void WarpPlayer(Transform target, float ratio)
