@@ -53,10 +53,12 @@ public class Player : MonoBehaviour
     float bombExplodeDist = 1f;
     public float time = 0;
     public float bladeOrbitSpeed = 1f;
+    public float bladeSpin = 100f;
     bool collide = false;
     public float spinTime = 0;
     [Tooltip("Measured in Degrees per second.")]
     public float angularSpeed = 270f;
+    public float bladeAngle = 0f;
 
     void Start()
     {
@@ -257,7 +259,21 @@ public class Player : MonoBehaviour
         for (int i = 0; i < cloneBladeList.Count; i++)
         {
             cloneBladeList[i].transform.Rotate(0, 0, bladeRotate);
+
+            bladeAngle += bladeSpin * Time.deltaTime;
+            if (bladeAngle > 360f)
+            {
+                bladeAngle = 0f;
+            }
+            float xPos = Mathf.Cos(bladeAngle * Mathf.Deg2Rad) * bladeDist + transform.position.x + (360 / cloneBladeList.Count) * i;
+            float yPos = Mathf.Sin(bladeAngle * Mathf.Deg2Rad) * bladeDist + transform.position.y + (360 / cloneBladeList.Count) * i;
+            List<Vector3> orbitPoints = new List<Vector3>();
+            orbitPoints.Add(new Vector3(xPos, yPos, 0));
+            //Vector3 orbitPoint = new Vector3(xPos, yPos, 0);
+            cloneBladeList[i].transform.position = orbitPoints[i];
         }
+        
+
     }
 
 
