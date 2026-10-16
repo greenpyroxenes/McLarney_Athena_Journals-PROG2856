@@ -36,10 +36,10 @@ public class Player : MonoBehaviour
     public GameObject playerShipPrefab;
     public List<GameObject> playerShips = new();
     public float bombAngle = 0f;
-    bool spinBombSpawn = false;
+    
     public float bombSpin = 10f;
     public float bombSpinRadius = 1f;
-    public bool bladeSpawn = false;
+    
     public int numOfBlades = 4;
     public float bladeDist = 1f;
     public float bladeSpeed = 1f;
@@ -48,13 +48,16 @@ public class Player : MonoBehaviour
     public float shipRotate = 1f;
     List<GameObject> cloneBladeList = new();
     public float collisionDist = 1f;
+    public bool bladeSpawn = false;
+    bool spinBombSpawn = false;
     public bool bombLaunch = false;
+    bool collide = false;
     public float bombLaunchSpeed = 10f;
     float bombExplodeDist = 1f;
     public float time = 0;
     public float bladeOrbitSpeed = 1f;
     public float bladeSpin = 100f;
-    bool collide = false;
+   
     public float spinTime = 0;
     [Tooltip("Measured in Degrees per second.")]
     public float angularSpeed = 270f;
@@ -218,7 +221,7 @@ public class Player : MonoBehaviour
         Debug.Log(launchAngle);
         Vector3 direction = launchAngle.normalized - Vector3.forward;
         copyBomb.transform.position += Time.deltaTime * bombLaunchSpeed * direction;
-        if(Vector3.Distance(enemyScript.transform.position, copyBomb.transform.position) < bombExplodeDist)
+        if(Vector3.Distance(enemyScript.transform.position, copyBomb.transform.position) > bombExplodeDist)
         {
             Destroy(copyBomb);
             bombLaunch = false;
@@ -265,8 +268,8 @@ public class Player : MonoBehaviour
             {
                 bladeAngle = 0f;
             }
-            float xPos = Mathf.Cos(bladeAngle * Mathf.Deg2Rad) * bladeDist + transform.position.x + (360 / cloneBladeList.Count) * i;
-            float yPos = Mathf.Sin(bladeAngle * Mathf.Deg2Rad) * bladeDist + transform.position.y + (360 / cloneBladeList.Count) * i;
+            float xPos = Mathf.Cos(bladeAngle + (360 / cloneBladeList.Count) * i * Mathf.Deg2Rad) * bladeDist + transform.position.x;
+            float yPos = Mathf.Sin(bladeAngle + (360 / cloneBladeList.Count) * i * Mathf.Deg2Rad) * bladeDist + transform.position.y;
             List<Vector3> orbitPoints = new List<Vector3>();
             orbitPoints.Add(new Vector3(xPos, yPos, 0));
             //Vector3 orbitPoint = new Vector3(xPos, yPos, 0);
