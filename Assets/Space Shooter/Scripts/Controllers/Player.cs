@@ -219,7 +219,7 @@ public class Player : MonoBehaviour
     {
         Vector3 launchAngle = new Vector3 (Mathf.Cos(bombAngle * Mathf.Deg2Rad), Mathf.Cos(bombAngle * Mathf.Deg2Rad));
         Vector3 direction = launchAngle.normalized - Vector3.forward;
-        copyBomb.transform.position += Time.deltaTime * bombLaunchSpeed * direction;
+        copyBomb.transform.position += Time.deltaTime * bombLaunchSpeed * launchAngle.normalized;
         if (bombExplodeDist > Vector3.Distance(enemyScript.transform.position, copyBomb.transform.position))
         {
             Destroy(copyBomb);
