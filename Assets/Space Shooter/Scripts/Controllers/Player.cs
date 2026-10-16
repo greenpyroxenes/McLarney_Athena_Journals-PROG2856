@@ -53,7 +53,7 @@ public class Player : MonoBehaviour
     public bool bombLaunch = false;
     bool collide = false;
     public float bombLaunchSpeed = 10f;
-    float bombExplodeDist = 1f;
+    public float bombExplodeDist = 1f;
     public float time = 0;
     public float bladeOrbitSpeed = 1f;
     public float bladeSpin = 100f;
@@ -218,13 +218,13 @@ public class Player : MonoBehaviour
     void LaunchBomb()
     {
         Vector3 launchAngle = new Vector3 (Mathf.Cos(bombAngle * Mathf.Deg2Rad), Mathf.Cos(bombAngle * Mathf.Deg2Rad));
-        Debug.Log(launchAngle);
         Vector3 direction = launchAngle.normalized - Vector3.forward;
         copyBomb.transform.position += Time.deltaTime * bombLaunchSpeed * direction;
-        if(Vector3.Distance(enemyScript.transform.position, copyBomb.transform.position) > bombExplodeDist)
+        if (bombExplodeDist > Vector3.Distance(enemyScript.transform.position, copyBomb.transform.position))
         {
             Destroy(copyBomb);
             bombLaunch = false;
+            time = 0;
         }
         time += Time.deltaTime;
         if(time > 4)
